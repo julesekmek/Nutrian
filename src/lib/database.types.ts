@@ -123,6 +123,52 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"shopping_checks": {
+                  Row: {
+                    "checked_at": string,"food_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "checked_at"?: string,"food_id": string,"user_id"?: string
+                  }
+                  Update: {
+                    "checked_at"?: string,"food_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shopping_checks_food_id_fkey"
+      columns: ["food_id"]
+isOneToOne: false
+      referencedRelation: "foods"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"shopping_plan_items": {
+                  Row: {
+                    "created_at": string,"portions": number,"recipe_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"portions": number,"recipe_id": string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"portions"?: number,"recipe_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shopping_plan_items_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipe_stock"
+      referencedColumns: ["recipe_id"]
+    },{
+      foreignKeyName: "shopping_plan_items_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  aggregateShoppingList,
   ageFromBirthYear,
   basalMetabolicRate,
   computeDayPlan,
@@ -165,5 +166,49 @@ describe("stock", () => {
     assert.equal(stockCoverageDays(6, 2), 3);
     assert.equal(stockCoverageDays(0, 2), 0);
     assert.equal(stockCoverageDays(-1, 2), 0);
+  });
+});
+
+describe("liste de courses", () => {
+  const curry = {
+    servings: 4,
+    ingredients: [
+      { foodId: "poulet", grams: 600 },
+      { foodId: "riz", grams: 300 },
+      { foodId: "lait-coco", grams: 200 },
+    ],
+  };
+  const bowl = {
+    servings: 2,
+    ingredients: [
+      { foodId: "riz", grams: 150 },
+      { foodId: "thon", grams: 140 },
+    ],
+  };
+
+  it("met les quantités à l'échelle des portions à préparer", () => {
+    const list = aggregateShoppingList([{ ...curry, portionsToPrepare: 6 }]);
+    assert.equal(list.get("poulet"), 900);
+    assert.equal(list.get("riz"), 450);
+    assert.equal(list.get("lait-coco"), 300);
+  });
+
+  it("additionne un même aliment présent dans plusieurs recettes", () => {
+    const list = aggregateShoppingList([
+      { ...curry, portionsToPrepare: 4 },
+      { ...bowl, portionsToPrepare: 3 },
+    ]);
+    // riz : 300 + 150 × 1,5 = 525
+    assert.equal(list.get("riz"), 525);
+    assert.equal(list.get("thon"), 210);
+  });
+
+  it("arrondit au gramme supérieur et ignore les recettes à 0 portion", () => {
+    const list = aggregateShoppingList([
+      { servings: 3, portionsToPrepare: 1, ingredients: [{ foodId: "huile", grams: 10 }] },
+      { ...bowl, portionsToPrepare: 0 },
+    ]);
+    assert.equal(list.get("huile"), 4);
+    assert.equal(list.has("thon"), false);
   });
 });

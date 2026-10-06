@@ -37,3 +37,9 @@ export function formatSigned(value: number): string {
   if (rounded < 0) return `−${formatInteger(Math.abs(rounded))}`;
   return "0";
 }
+
+/** « 350 g » ou « 1,6 kg » au-delà d'un kilo. */
+export function formatWeight(grams: number): string {
+  if (grams >= 1000) return `${formatDecimal(Math.round(grams / 100) / 10)} kg`;
+  return formatGrams(grams);
+}

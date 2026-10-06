@@ -240,3 +240,35 @@ export function stockCoverageDays(stockPortions: number, portionsPerDay: number)
   if (portionsPerDay <= 0) return Number.POSITIVE_INFINITY;
   return Math.max(0, stockPortions) / portionsPerDay;
 }
+
+// --- Liste de courses ----------------------------------------------------------
+
+export type PlannedRecipe = {
+  /** Portions de la recette telle qu'écrite (ses grammes correspondent à ce nombre de portions). */
+  servings: number;
+  /** Portions à préparer pour le prochain batch. */
+  portionsToPrepare: number;
+  ingredients: { foodId: string; grams: number }[];
+};
+
+/**
+ * Agrège les ingrédients des recettes prévues, mis à l'échelle des portions à préparer.
+ * Renvoie les grammes par aliment, arrondis au gramme supérieur (mieux vaut un peu trop que pas assez).
+ */
+export function aggregateShoppingList(plan: PlannedRecipe[]): Map<string, number> {
+  const gramsByFood = new Map<string, number>();
+  for (const recipe of plan) {
+    if (recipe.portionsToPrepare <= 0) continue;
+    const scale = recipe.portionsToPrepare / Math.max(1, recipe.servings);
+    for (const ingredient of recipe.ingredients) {
+      gramsByFood.set(
+        ingredient.foodId,
+        (gramsByFood.get(ingredient.foodId) ?? 0) + ingredient.grams * scale,
+      );
+    }
+  }
+  for (const [foodId, grams] of gramsByFood) {
+    gramsByFood.set(foodId, Math.ceil(grams - 1e-9));
+  }
+  return gramsByFood;
+}

@@ -133,3 +133,15 @@ export const batchSettingsSchema = z.object({
   batchesPerWeek: requiredNumber("le nombre de batchs", 1, 7).pipe(z.int("Nombre entier attendu.")),
   stockPortionsPerDay: requiredNumber("le nombre de portions par jour", 0.5, 6),
 });
+
+// --- Liste de courses -----------------------------------------------------------
+
+export const planItemSchema = z.object({
+  recipeId: uuidSchema,
+  portions: z.number().int().min(0).max(100),
+});
+
+export const shoppingCheckSchema = z.object({
+  foodId: uuidSchema,
+  checked: z.boolean(),
+});

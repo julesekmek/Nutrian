@@ -13,3 +13,11 @@ Idées et améliorations repérées pendant la V1, à prioriser pour les prochai
 - Recherche Open Food Facts par nom de produit (puis scan de code-barres, hors périmètre V1).
 - Modifier un aliment perso (aujourd'hui : supprimer puis recréer).
 - Aliments favoris / récents en tête de liste.
+
+## Cuisine
+
+- Conversion des grammes en unités pratiques pour les courses (œufs, pièces, conditionnements).
+- Déduire de la liste de courses ce qui reste en placard (inventaire simple).
+- Ajuster le stock sans supprimer de préparation (ex. « j'ai jeté une portion »).
+- Dupliquer une recette, photos de plats, étapes de préparation.
+- Date de péremption des portions et alerte « à manger en premier ».

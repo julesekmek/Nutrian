@@ -60,3 +60,10 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Stock calculé, jamais saisi** : portions préparées − portions mangées (vue SQL `recipe_stock`, soumise aux règles RLS via `security_invoker`). Supprimer un repas du journal remet donc automatiquement la portion en stock.
 - **Corriger une erreur** = supprimer la préparation concernée (liste « Dernières préparations »).
 - **Rythme de batch dans le profil** : 2 batchs par semaine et 2 portions du stock par jour par défaut (déjeuner + dîner), modifiables. Ils servent à estimer la couverture du stock et les recommandations du coach.
+
+## Liste de courses
+
+- **Plan du prochain batch = recettes × portions à préparer**, enregistré en base pour le retrouver sur un autre appareil (planification sur grand écran, courses sur téléphone).
+- **Quantités agrégées en grammes, arrondies au gramme supérieur**, affichées en kg au-delà d'1 kg, regroupées par rayon (catégorie d'aliment). Pas de conversion en pièces/unités pour la V1.
+- **Ce qui est déjà en stock ou dans les placards n'est pas déduit** de la liste : on coche ce qu'on a.
+- **« J'ai cuisiné ce batch »** transforme le plan en préparations datées du jour (le stock se remplit) et remet la liste à zéro : une seule action après la session de cuisine.
