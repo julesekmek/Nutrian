@@ -100,3 +100,10 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Recommandation batch** : intervalle entre batchs = 7 / batchs par semaine (3,5 jours par défaut). Si le stock ne couvre pas les jours jusqu'au prochain batch (portions par jour × jours restants), le coach indique combien de portions préparer. L'écran Courses affiche aussi les portions à prévoir pour le prochain batch.
 - **Rappel de pesée** au-delà de 7 jours sans pesée (si aucun message batch n'est prioritaire). Au plus 2 recommandations à la fois.
 - **Vue semaine = 7 derniers jours glissants** (pas lundi → dimanche) pour toujours voir une semaine complète. Les cibles des jours passés sont recalculées avec le poids actuel (approximation acceptable pour la V1).
+
+## Base de données et déploiement
+
+- **Migrations non appliquées automatiquement sur le projet distant** : les clés fournies (anon, service_role) ne permettent pas d'exécuter du SQL. `supabase/setup.sql` (généré depuis les migrations) est à coller une fois dans le SQL Editor. Il a été validé sur une base PostgreSQL vierge, et l'isolation entre deux comptes a été testée (lecture et écriture croisées refusées, accès anonyme refusé).
+- **Droits explicites** : chaque table accorde ses droits au rôle `authenticated` et les retire à `anon`, sans dépendre des droits par défaut du projet Supabase.
+- **Render** : Web Service Node, plan gratuit, région Francfort, Node 24, `npm ci && npm run build` puis `npm run start` (Next lit la variable `PORT` fournie par Render). Variables à déclarer : `SUPABASE_URL` et `SUPABASE_ANON_KEY` uniquement.
+- **Lien « Se déconnecter » sur l'onboarding** : utile si l'on s'est trompé de compte avant d'avoir créé son profil.
