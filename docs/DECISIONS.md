@@ -24,3 +24,9 @@ Hypothèses et choix faits pendant la construction de la V1. Chaque ligne peut �
 | `zod` | Validation des données côté serveur dans chaque Server Action, avec messages par champ. |
 
 Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`node --test`, TypeScript exécuté nativement), CLI Supabase lancée via `npx` pour la base locale de développement.
+
+## Authentification
+
+- **E-mail + mot de passe, 8 caractères minimum** (validé côté serveur avec Zod, messages d'erreur Supabase traduits).
+- **Confirmation d'e-mail gérée dans les deux cas** : si elle est désactivée dans Supabase, l'inscription ouvre directement l'onboarding ; si elle est activée, un message invite à cliquer le lien, qui revient sur `/auth/confirm` puis l'onboarding. Recommandation pour un usage solo : la désactiver.
+- **Base Supabase locale (Docker) pour le développement** : `npx supabase start` + `npm run dev:local`. Un compte de test local est créé par `supabase/seed.sql` (jamais exécuté sur le projet distant).

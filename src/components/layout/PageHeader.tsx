@@ -17,7 +17,7 @@ export function PageHeader({
   backLabel?: string;
 }) {
   return (
-    <header className="pt-safe mb-section">
+    <header className="mb-section">
       {backHref ? (
         <Link
           href={backHref}

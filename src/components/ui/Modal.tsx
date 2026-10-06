@@ -47,7 +47,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative max-h-[90dvh] w-full max-w-content overflow-y-auto rounded-t-sheet bg-surface p-5 pb-safe shadow-floating sm:rounded-sheet"
+        className="relative max-h-[90dvh] w-full max-w-content overflow-y-auto rounded-t-sheet bg-surface px-5 pt-5 pb-[calc(var(--spacing)*5+env(safe-area-inset-bottom))] shadow-floating sm:rounded-sheet"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 id={titleId} className="text-headline text-ink">
@@ -62,7 +62,7 @@ export function Modal({
             <Icon name="close" size={16} />
           </button>
         </div>
-        <div className="pb-4">{children}</div>
+        <div>{children}</div>
       </div>
     </div>,
     document.body,

@@ -12,7 +12,8 @@
     "db:setup-sql": "node scripts/build-setup-sql.mjs",
     "db:types": "npx supabase@2 gen types typescript --local > src/lib/database.types.ts",
     "icons": "node scripts/generate-icons.mjs",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "dev:local": "sh scripts/dev-local.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
