@@ -77,3 +77,9 @@ export function formatRelativeDay(isoDate: string, today: string = todayIso()): 
   if (diff === 1) return "Hier";
   return formatShortDate(isoDate);
 }
+
+/** Date ISO correspondant au choix « aujourd'hui » / « hier » de l'écran de saisie. */
+export function dayFromChoice(choice: "today" | "yesterday", now: Date = new Date()): string {
+  const today = todayIso(now);
+  return choice === "yesterday" ? addDays(today, -1) : today;
+}

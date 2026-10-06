@@ -67,3 +67,12 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Quantités agrégées en grammes, arrondies au gramme supérieur**, affichées en kg au-delà d'1 kg, regroupées par rayon (catégorie d'aliment). Pas de conversion en pièces/unités pour la V1.
 - **Ce qui est déjà en stock ou dans les placards n'est pas déduit** de la liste : on coche ce qu'on a.
 - **« J'ai cuisiné ce batch »** transforme le plan en préparations datées du jour (le stock se remplit) et remet la liste à zéro : une seule action après la session de cuisine.
+
+## Journal des repas
+
+- **Bouton « + » → écran Ajouter** (une page plutôt qu'une modale) : un plat du stock s'enregistre en 2 gestes (« + » puis le plat), avec un toast « Annuler » pendant 6 secondes.
+- **Une portion entière par geste** ; la colonne `portions` accepte déjà des décimales pour une future demi-portion.
+- **Valeurs figées** : chaque repas copie les kcal et macros du moment. Modifier ou supprimer la recette ne réécrit pas l'historique.
+- **Saisie possible pour hier** (sélecteur Aujourd'hui / Hier) pour rattraper un oubli sans compliquer l'écran.
+- **Repas extérieur** : nom + kcal obligatoires, macros facultatives (comptées à 0 dans les totaux si absentes).
+- **Impossible de piocher une portion absente du stock** (vérifié côté serveur).

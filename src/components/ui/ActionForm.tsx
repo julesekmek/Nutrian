@@ -13,6 +13,8 @@ type ActionFormProps<T> = {
   className?: string;
   /** Vide le formulaire après succès (par défaut). */
   resetOnSuccess?: boolean;
+  /** Affiche le message de succès dans un toast (par défaut). */
+  successToast?: boolean;
   onSuccess?: (result: Extract<ActionResult<T>, { ok: true }>) => void;
 };
 
@@ -25,6 +27,7 @@ export function ActionForm<T>({
   children,
   className = "flex flex-col gap-4",
   resetOnSuccess = true,
+  successToast = true,
   onSuccess,
 }: ActionFormProps<T>) {
   const toast = useToast();
@@ -42,7 +45,7 @@ export function ActionForm<T>({
       if (result.ok) {
         setError(null);
         setFieldErrors({});
-        if (result.message) toast.success(result.message);
+        if (successToast && result.message) toast.success(result.message);
         if (resetOnSuccess) form.reset();
         onSuccess?.(result);
       } else {

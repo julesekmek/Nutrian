@@ -145,3 +145,22 @@ export const shoppingCheckSchema = z.object({
   foodId: uuidSchema,
   checked: z.boolean(),
 });
+
+// --- Journal des repas ----------------------------------------------------------
+
+/** Jour de saisie proposé dans l'écran « + » : aujourd'hui ou hier (oubli de la veille). */
+export const dayChoiceSchema = z.enum(["today", "yesterday"]).catch("today");
+
+export const stockMealSchema = z.object({
+  recipeId: uuidSchema,
+  day: dayChoiceSchema,
+});
+
+export const quickMealSchema = z.object({
+  name: requiredText("ce que tu as mangé"),
+  kcal: requiredNumber("les calories", 0, 5000),
+  proteinG: optionalNumber(0, 500),
+  carbsG: optionalNumber(0, 500),
+  fatG: optionalNumber(0, 500),
+  day: dayChoiceSchema,
+});

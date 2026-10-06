@@ -37,6 +37,32 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"meal_entries": {
+                  Row: {
+                    "carbs_g": number | null,"created_at": string,"eaten_on": string,"fat_g": number | null,"id": string,"kcal": number,"name": string,"portions": number,"protein_g": number | null,"recipe_id": string | null,"source": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "carbs_g"?: number | null,"created_at"?: string,"eaten_on": string,"fat_g"?: number | null,"id"?: string,"kcal": number,"name": string,"portions"?: number,"protein_g"?: number | null,"recipe_id"?: string | null,"source": string,"user_id"?: string
+                  }
+                  Update: {
+                    "carbs_g"?: number | null,"created_at"?: string,"eaten_on"?: string,"fat_g"?: number | null,"id"?: string,"kcal"?: number,"name"?: string,"portions"?: number,"protein_g"?: number | null,"recipe_id"?: string | null,"source"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "meal_entries_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipe_stock"
+      referencedColumns: ["recipe_id"]
+    },{
+      foreignKeyName: "meal_entries_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"preparations": {
                   Row: {
                     "created_at": string,"id": string,"portions": number,"prepared_on": string,"recipe_id": string,"user_id": string
