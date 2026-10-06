@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "foods": {
+            "daily_steps": {
+                  Row: {
+                    "day": string,"steps": number,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "day": string,"steps": number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "day"?: string,"steps"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"foods": {
                   Row: {
                     "carbs_per_100g": number,"category": string,"created_at": string,"fat_per_100g": number,"id": string,"kcal_per_100g": number,"name": string,"protein_per_100g": number,"user_id": string | null
                   }
@@ -194,6 +208,20 @@ isOneToOne: false
       referencedRelation: "recipes"
       referencedColumns: ["id"]
     }
+                  ]
+                },"workouts": {
+                  Row: {
+                    "created_at": string,"day": string,"duration_min": number,"id": string,"kcal": number,"kind": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"day": string,"duration_min": number,"id"?: string,"kcal": number,"kind": string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"day"?: string,"duration_min"?: number,"id"?: string,"kcal"?: number,"kind"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 }
           }

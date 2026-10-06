@@ -164,3 +164,17 @@ export const quickMealSchema = z.object({
   fatG: optionalNumber(0, 500),
   day: dayChoiceSchema,
 });
+
+// --- Activité -------------------------------------------------------------------
+
+export const stepsSchema = z.object({
+  steps: requiredNumber("ton nombre de pas", 0, 200000).pipe(z.int("Nombre entier attendu.")),
+  day: dayChoiceSchema,
+});
+
+export const workoutSchema = z.object({
+  kind: z.enum(["strength", "running", "crossfit", "other"], { error: "Choisis un type de séance." }),
+  durationMin: requiredNumber("la durée", 1, 600).pipe(z.int("Nombre entier de minutes.")),
+  kcal: optionalNumber(0, 5000),
+  day: dayChoiceSchema,
+});

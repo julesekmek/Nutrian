@@ -9,13 +9,17 @@ import {
   type ActionResult,
 } from "@/lib/action-result";
 import { getAuthenticatedClient } from "@/lib/auth";
+import { estimateWorkoutKcal } from "@/lib/calculations";
+import { getProfile } from "@/lib/data/profile";
 import { getRecipe } from "@/lib/data/recipes";
 import { dayFromChoice } from "@/lib/dates";
 import {
   formDataToObject,
   quickMealSchema,
+  stepsSchema,
   stockMealSchema,
   uuidSchema,
+  workoutSchema,
 } from "@/lib/validation";
 
 const round1 = (value: number) => Math.round(value * 10) / 10;
@@ -117,4 +121,67 @@ export async function deleteMealEntry(entryId: string): Promise<ActionResult> {
   return success(
     data.source === "stock" ? "Repas retiré, la portion revient dans ton stock." : "Repas retiré.",
   );
+}
+
+// --- Activité -------------------------------------------------------------------
+
+export async function saveSteps(formData: FormData): Promise<ActionResult> {
+  const parsed = stepsSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error } = await supabase.from("daily_steps").upsert({
+    user_id: user.id,
+    day: dayFromChoice(parsed.data.day),
+    steps: parsed.data.steps,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success(
+    parsed.data.steps >= 10000 ? "Bien joué, plus de 10 000 pas !" : "Pas enregistrés, chaque pas compte.",
+  );
+}
+
+/** Séance : kcal saisies (montre) ou, à défaut, estimées avec les MET et le poids actuel. */
+export async function logWorkout(formData: FormData): Promise<ActionResult> {
+  const parsed = workoutSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const { kind, durationMin, day } = parsed.data;
+  const { supabase, user } = await getAuthenticatedClient();
+  let kcal = parsed.data.kcal;
+  if (kcal === undefined) {
+    const profile = await getProfile();
+    kcal = estimateWorkoutKcal({ kind, durationMin, weightKg: profile?.weightKg ?? 70 });
+  }
+
+  const { error } = await supabase.from("workouts").insert({
+    user_id: user.id,
+    day: dayFromChoice(day),
+    kind,
+    duration_min: durationMin,
+    kcal: Math.round(kcal),
+  });
+  if (error) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success(`Séance enregistrée : ${Math.round(kcal)} kcal dépensées, bien joué !`);
+}
+
+export async function deleteWorkout(workoutId: string): Promise<ActionResult> {
+  const id = uuidSchema.safeParse(workoutId);
+  if (!id.success) return failure("Séance introuvable.");
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error, count } = await supabase
+    .from("workouts")
+    .delete({ count: "exact" })
+    .eq("id", id.data)
+    .eq("user_id", user.id);
+  if (error || count === 0) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success("Séance retirée.");
 }

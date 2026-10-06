@@ -1,4 +1,4 @@
-import type { ActivityLevel, Goal, Sex } from "@/lib/calculations";
+import type { ActivityLevel, Goal, Sex, WorkoutKind } from "@/lib/calculations";
 
 export const GOALS: { value: Goal; label: string; description: string }[] = [
   { value: "bulk", label: "Prise de masse", description: "Un léger surplus pour construire du muscle." },
@@ -17,6 +17,13 @@ export const ACTIVITY_LEVELS: { value: ActivityLevel; label: string; description
   { value: "moderate", label: "Modérée", description: "3 à 4 séances par semaine." },
   { value: "active", label: "Active", description: "5 à 6 séances par semaine." },
   { value: "very_active", label: "Très active", description: "Sport quotidien ou métier physique." },
+];
+
+export const WORKOUT_KINDS: { value: WorkoutKind; label: string }[] = [
+  { value: "strength", label: "Musculation" },
+  { value: "running", label: "Course" },
+  { value: "crossfit", label: "CrossFit" },
+  { value: "other", label: "Autre" },
 ];
 
 export function labelOf<T extends string>(

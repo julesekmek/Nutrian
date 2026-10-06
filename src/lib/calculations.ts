@@ -9,6 +9,7 @@
  */
 
 export type Sex = "male" | "female";
+export type WorkoutKind = "strength" | "running" | "crossfit" | "other";
 export type Goal = "bulk" | "maintain" | "cut";
 export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
 
@@ -35,6 +36,11 @@ export const RULES = {
   fatPerKg: 1,
   /** Énergie par gramme de macronutriment. */
   kcalPerGram: { protein: 4, carbs: 4, fat: 9 },
+  /**
+   * Équivalents métaboliques (MET) pour estimer une séance quand ses kcal ne sont pas saisies :
+   * kcal = MET × poids (kg) × durée (h). Valeurs moyennes du Compendium of Physical Activities.
+   */
+  workoutMet: { strength: 5, running: 9.8, crossfit: 8, other: 6 } satisfies Record<WorkoutKind, number>,
 } as const;
 
 // --- Profil, métabolisme et dépense ------------------------------------------
@@ -121,6 +127,19 @@ export function dailyExpenditure({
     stepsKcal,
     workoutsKcal,
   };
+}
+
+/** Estimation des kcal d'une séance (si la montre ne donne rien). */
+export function estimateWorkoutKcal({
+  kind,
+  durationMin,
+  weightKg,
+}: {
+  kind: WorkoutKind;
+  durationMin: number;
+  weightKg: number;
+}): number {
+  return Math.round(RULES.workoutMet[kind] * weightKg * (durationMin / 60));
 }
 
 export type MacroTargets = { kcal: number; proteinG: number; carbsG: number; fatG: number };

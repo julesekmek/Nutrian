@@ -76,3 +76,10 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Saisie possible pour hier** (sélecteur Aujourd'hui / Hier) pour rattraper un oubli sans compliquer l'écran.
 - **Repas extérieur** : nom + kcal obligatoires, macros facultatives (comptées à 0 dans les totaux si absentes).
 - **Impossible de piocher une portion absente du stock** (vérifié côté serveur).
+
+## Activité
+
+- **Séances typées** : musculation, course, CrossFit, autre ; durée en minutes avec raccourcis 30/45/60/90.
+- **kcal d'une séance facultatives** : si la montre ne donne rien, estimation `MET × poids × durée` (MET moyens : musculation 5, course 9,8, CrossFit 8, autre 6), affichée avant validation. Règle dans `RULES.workoutMet`.
+- **Pas : une valeur par jour**, modifiable (la dernière saisie remplace la précédente).
+- **« Activité saisie »** = des pas renseignés (même 0) ou au moins une séance. Sinon la dépense est estimée avec le niveau d'activité déclaré.

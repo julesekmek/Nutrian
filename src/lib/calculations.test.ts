@@ -6,6 +6,7 @@ import {
   basalMetabolicRate,
   computeDayPlan,
   dailyExpenditure,
+  estimateWorkoutKcal,
   kcalFromMacros,
   nutrientsForGrams,
   recipeNutrition,
@@ -83,6 +84,14 @@ describe("dépense du jour", () => {
     });
     assert.equal(result.method, "logged");
     close(result.totalKcal, 1500 * 1.2 + 300);
+  });
+});
+
+describe("séances", () => {
+  it("estime les kcal d'une séance avec les MET (MET × poids × heures)", () => {
+    assert.equal(estimateWorkoutKcal({ kind: "running", durationMin: 60, weightKg: 80 }), 784);
+    assert.equal(estimateWorkoutKcal({ kind: "strength", durationMin: 90, weightKg: 80 }), 600);
+    assert.equal(estimateWorkoutKcal({ kind: "crossfit", durationMin: 45, weightKg: 70 }), 420);
   });
 });
 
