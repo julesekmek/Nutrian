@@ -9,6 +9,7 @@ import { ageFromBirthYear, computeDayPlan } from "@/lib/calculations";
 import { getProfile } from "@/lib/data/profile";
 import { currentYear } from "@/lib/dates";
 import { signOut } from "../../(auth)/actions";
+import { BatchSettingsForm } from "./BatchSettingsForm";
 import { ProfileForm } from "./ProfileForm";
 
 export const metadata: Metadata = { title: "Profil" };
@@ -38,6 +39,16 @@ export default async function ProfilePage() {
           <SectionTitle>Mes informations</SectionTitle>
           <Card>
             <ProfileForm profile={profile} age={ageFromBirthYear(profile.birthYear, year)} />
+          </Card>
+        </section>
+
+        <section>
+          <SectionTitle>Batch cooking</SectionTitle>
+          <Card>
+            <BatchSettingsForm
+              batchesPerWeek={profile.batchesPerWeek}
+              stockPortionsPerDay={profile.stockPortionsPerDay}
+            />
           </Card>
         </section>
 

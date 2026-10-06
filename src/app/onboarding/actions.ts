@@ -11,7 +11,12 @@ import {
 } from "@/lib/action-result";
 import { getAuthenticatedClient } from "@/lib/auth";
 import { currentYear } from "@/lib/dates";
-import { formDataToObject, profileSchema, type ProfileInput } from "@/lib/validation";
+import {
+  batchSettingsSchema,
+  formDataToObject,
+  profileSchema,
+  type ProfileInput,
+} from "@/lib/validation";
 
 function toProfileRow(input: ProfileInput) {
   return {
@@ -54,4 +59,24 @@ export async function updateProfile(formData: FormData): Promise<ActionResult> {
 
   revalidatePath("/", "layout");
   return success("Profil mis à jour, tes cibles sont recalculées.");
+}
+
+/** Rythme de batch cooking (utilisé par les recommandations du coach). */
+export async function updateBatchSettings(formData: FormData): Promise<ActionResult> {
+  const parsed = batchSettingsSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      batches_per_week: parsed.data.batchesPerWeek,
+      stock_portions_per_day: parsed.data.stockPortionsPerDay,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", user.id);
+  if (error) return failure(GENERIC_ERROR);
+
+  revalidatePath("/", "layout");
+  return success("Rythme de batch cooking enregistré.");
 }

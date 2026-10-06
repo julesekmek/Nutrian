@@ -8,6 +8,7 @@ import {
   kcalFromMacros,
   nutrientsForGrams,
   recipeNutrition,
+  stockCoverageDays,
   macroTargets,
   type BodyProfile,
 } from "./calculations.ts";
@@ -156,5 +157,13 @@ describe("recettes", () => {
     const { total, perServing } = recipeNutrition([], 0);
     assert.equal(total.kcal, 0);
     assert.equal(perServing.kcal, 0);
+  });
+});
+
+describe("stock", () => {
+  it("calcule le nombre de jours couverts par le stock", () => {
+    assert.equal(stockCoverageDays(6, 2), 3);
+    assert.equal(stockCoverageDays(0, 2), 0);
+    assert.equal(stockCoverageDays(-1, 2), 0);
   });
 });

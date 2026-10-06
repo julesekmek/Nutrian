@@ -232,3 +232,11 @@ export function recipeNutrition(ingredients: IngredientInput[], servings: number
   );
   return { total, perServing: scaleNutrients(total, 1 / Math.max(1, servings)) };
 }
+
+// --- Stock et batch cooking ----------------------------------------------------
+
+/** Nombre de jours couverts par le stock, au rythme de `portionsPerDay` portions mangées par jour. */
+export function stockCoverageDays(stockPortions: number, portionsPerDay: number): number {
+  if (portionsPerDay <= 0) return Number.POSITIVE_INFINITY;
+  return Math.max(0, stockPortions) / portionsPerDay;
+}

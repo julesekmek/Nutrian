@@ -120,3 +120,16 @@ export const recipeSchema = z.object({
       .max(50, "50 ingrédients maximum."),
   ),
 });
+
+// --- Stock et batch cooking ---------------------------------------------------
+
+export const preparationSchema = z.object({
+  recipeId: uuidSchema,
+  portions: requiredNumber("le nombre de portions", 1, 100).pipe(z.int("Nombre entier attendu.")),
+  preparedOn: isoDateSchema,
+});
+
+export const batchSettingsSchema = z.object({
+  batchesPerWeek: requiredNumber("le nombre de batchs", 1, 7).pipe(z.int("Nombre entier attendu.")),
+  stockPortionsPerDay: requiredNumber("le nombre de portions par jour", 0.5, 6),
+});

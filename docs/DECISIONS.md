@@ -54,3 +54,9 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Enregistrement atomique** via la fonction SQL `save_recipe` (SECURITY INVOKER, donc soumise aux règles RLS) : la recette et ses ingrédients sont écrits ensemble ou pas du tout.
 - **1 à 50 portions, 1 à 50 ingrédients**, 4 portions proposées par défaut.
 - **Supprimer une recette** supprime aussi son stock et sa place dans la liste de courses ; les repas déjà enregistrés restent dans le journal (valeurs figées au moment du repas).
+
+## Stock de plats préparés
+
+- **Stock calculé, jamais saisi** : portions préparées − portions mangées (vue SQL `recipe_stock`, soumise aux règles RLS via `security_invoker`). Supprimer un repas du journal remet donc automatiquement la portion en stock.
+- **Corriger une erreur** = supprimer la préparation concernée (liste « Dernières préparations »).
+- **Rythme de batch dans le profil** : 2 batchs par semaine et 2 portions du stock par jour par défaut (déjeuner + dîner), modifiables. Ils servent à estimer la couverture du stock et les recommandations du coach.

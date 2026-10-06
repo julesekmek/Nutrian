@@ -10,7 +10,13 @@ import {
 } from "@/lib/action-result";
 import { getAuthenticatedClient } from "@/lib/auth";
 import { kcalFromMacros } from "@/lib/calculations";
-import { foodSchema, formDataToObject, recipeSchema, uuidSchema } from "@/lib/validation";
+import {
+  foodSchema,
+  formDataToObject,
+  preparationSchema,
+  recipeSchema,
+  uuidSchema,
+} from "@/lib/validation";
 
 const FOREIGN_KEY_VIOLATION = "23503";
 
@@ -100,4 +106,39 @@ export async function deleteRecipe(recipeId: string): Promise<ActionResult> {
 
   refreshAll();
   return success("Recette supprimée.");
+}
+
+// --- Stock --------------------------------------------------------------------
+
+export async function createPreparation(formData: FormData): Promise<ActionResult> {
+  const parsed = preparationSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error } = await supabase.from("preparations").insert({
+    user_id: user.id,
+    recipe_id: parsed.data.recipeId,
+    portions: parsed.data.portions,
+    prepared_on: parsed.data.preparedOn,
+  });
+  if (error) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success(`Bien joué, ${parsed.data.portions} portion${parsed.data.portions > 1 ? "s" : ""} au frais !`);
+}
+
+export async function deletePreparation(preparationId: string): Promise<ActionResult> {
+  const id = uuidSchema.safeParse(preparationId);
+  if (!id.success) return failure("Préparation introuvable.");
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error, count } = await supabase
+    .from("preparations")
+    .delete({ count: "exact" })
+    .eq("id", id.data)
+    .eq("user_id", user.id);
+  if (error || count === 0) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success("Préparation retirée du stock.");
 }

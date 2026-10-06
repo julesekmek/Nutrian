@@ -37,16 +37,42 @@ export type Database = {
                   Relationships: [
                     
                   ]
-                },"profiles": {
+                },"preparations": {
                   Row: {
-                    "activity_level": string,"birth_year": number,"created_at": string,"goal": string,"height_cm": number,"sex": string,"updated_at": string,"user_id": string,"weight_kg": number
+                    "created_at": string,"id": string,"portions": number,"prepared_on": string,"recipe_id": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "activity_level": string,"birth_year": number,"created_at"?: string,"goal": string,"height_cm": number,"sex": string,"updated_at"?: string,"user_id"?: string,"weight_kg": number
+                    "created_at"?: string,"id"?: string,"portions": number,"prepared_on"?: string,"recipe_id": string,"user_id"?: string
                   }
                   Update: {
-                    "activity_level"?: string,"birth_year"?: number,"created_at"?: string,"goal"?: string,"height_cm"?: number,"sex"?: string,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
+                    "created_at"?: string,"id"?: string,"portions"?: number,"prepared_on"?: string,"recipe_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "preparations_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipe_stock"
+      referencedColumns: ["recipe_id"]
+    },{
+      foreignKeyName: "preparations_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "activity_level": string,"batches_per_week": number,"birth_year": number,"created_at": string,"goal": string,"height_cm": number,"sex": string,"stock_portions_per_day": number,"updated_at": string,"user_id": string,"weight_kg": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_level": string,"batches_per_week"?: number,"birth_year": number,"created_at"?: string,"goal": string,"height_cm": number,"sex": string,"stock_portions_per_day"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg": number
+                  }
+                  Update: {
+                    "activity_level"?: string,"batches_per_week"?: number,"birth_year"?: number,"created_at"?: string,"goal"?: string,"height_cm"?: number,"sex"?: string,"stock_portions_per_day"?: number,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
                   }
                   Relationships: [
                     
@@ -73,6 +99,12 @@ isOneToOne: false
       foreignKeyName: "recipe_ingredients_recipe_id_fkey"
       columns: ["recipe_id"]
 isOneToOne: false
+      referencedRelation: "recipe_stock"
+      referencedColumns: ["recipe_id"]
+    },{
+      foreignKeyName: "recipe_ingredients_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
       referencedRelation: "recipes"
       referencedColumns: ["id"]
     }
@@ -94,7 +126,15 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "recipe_stock": {
+                  Row: {
+                    "last_prepared_on": string | null,"portions_left": number | null,"recipe_id": string | null,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                }
           }
           Functions: {
             "save_recipe":
