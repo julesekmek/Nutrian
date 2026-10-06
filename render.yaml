@@ -1,0 +1,19 @@
+# Blueprint Render : un Web Service Node pour l'app Next.js.
+# Les secrets ne sont pas dans ce fichier : Render les demande à la création (sync: false).
+services:
+  - type: web
+    name: nutrian
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false

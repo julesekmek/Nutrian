@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens Nutrian — interface provisoire.
+ * Toute couleur, typographie, rayon, ombre ou espacement de l'app passe par ces
+ * variables. La refonte visuelle (maquettes Claude Design) se fera ici d'abord.
+ */
+
+:root {
+  /* Couleurs de fond et de texte */
+  --nt-canvas: #f2f2f7;
+  --nt-surface: #ffffff;
+  --nt-surface-muted: #ebebf0;
+  --nt-line: #e3e3e8;
+  --nt-ink: #1c1c1e;
+  --nt-ink-muted: #6c6c70;
+  --nt-ink-subtle: #a1a1a6;
+
+  /* Marque */
+  --nt-primary: #3446d8;
+  --nt-primary-ink: #ffffff;
+  --nt-primary-soft: #e6e9fb;
+
+  /* Données nutritionnelles */
+  --nt-energy: #ff5a3c;
+  --nt-energy-soft: #ffe7e2;
+  --nt-protein: #11a983;
+  --nt-protein-soft: #dcf4ec;
+  --nt-carbs: #f5a20a;
+  --nt-carbs-soft: #fdf0d6;
+  --nt-fat: #8b5cf6;
+  --nt-fat-soft: #ece4fe;
+
+  /* États */
+  --nt-success: #1f9d5c;
+  --nt-success-soft: #ddf3e6;
+  --nt-danger: #d93f45;
+  --nt-danger-soft: #fbe3e4;
+  --nt-overlay: rgb(0 0 0 / 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nt-canvas: #000000;
+    --nt-surface: #1c1c1e;
+    --nt-surface-muted: #2c2c2e;
+    --nt-line: #38383a;
+    --nt-ink: #f2f2f7;
+    --nt-ink-muted: #a1a1a6;
+    --nt-ink-subtle: #6c6c70;
+
+    --nt-primary: #6d7cff;
+    --nt-primary-ink: #ffffff;
+    --nt-primary-soft: #23284d;
+
+    --nt-energy: #ff6b4f;
+    --nt-energy-soft: #3d1f19;
+    --nt-protein: #2fcf9f;
+    --nt-protein-soft: #153a30;
+    --nt-carbs: #ffb52e;
+    --nt-carbs-soft: #3d2f12;
+    --nt-fat: #a78bfa;
+    --nt-fat-soft: #2d2348;
+
+    --nt-success: #3ccf7f;
+    --nt-success-soft: #173a27;
+    --nt-danger: #ff6369;
+    --nt-danger-soft: #431d1f;
+    --nt-overlay: rgb(0 0 0 / 0.6);
+  }
+}
+
+/* On retire la palette Tailwind par défaut : seules les couleurs Nutrian existent. */
+@theme {
+  --color-*: initial;
+}
+
+@theme inline {
+  --color-canvas: var(--nt-canvas);
+  --color-surface: var(--nt-surface);
+  --color-surface-muted: var(--nt-surface-muted);
+  --color-line: var(--nt-line);
+  --color-ink: var(--nt-ink);
+  --color-ink-muted: var(--nt-ink-muted);
+  --color-ink-subtle: var(--nt-ink-subtle);
+  --color-primary: var(--nt-primary);
+  --color-primary-ink: var(--nt-primary-ink);
+  --color-primary-soft: var(--nt-primary-soft);
+  --color-energy: var(--nt-energy);
+  --color-energy-soft: var(--nt-energy-soft);
+  --color-protein: var(--nt-protein);
+  --color-protein-soft: var(--nt-protein-soft);
+  --color-carbs: var(--nt-carbs);
+  --color-carbs-soft: var(--nt-carbs-soft);
+  --color-fat: var(--nt-fat);
+  --color-fat-soft: var(--nt-fat-soft);
+  --color-success: var(--nt-success);
+  --color-success-soft: var(--nt-success-soft);
+  --color-danger: var(--nt-danger);
+  --color-danger-soft: var(--nt-danger-soft);
+  --color-overlay: var(--nt-overlay);
+}
+
+@theme {
+  /* Typographie : police système (SF Pro sur iPhone), comme Apple Santé. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-display: 2.25rem;
+  --text-display--line-height: 2.5rem;
+  --text-display--font-weight: 700;
+  --text-title: 1.75rem;
+  --text-title--line-height: 2.125rem;
+  --text-title--font-weight: 700;
+  --text-headline: 1.0625rem;
+  --text-headline--line-height: 1.375rem;
+  --text-headline--font-weight: 600;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.375rem;
+  --text-callout: 0.9375rem;
+  --text-callout--line-height: 1.25rem;
+  --text-footnote: 0.8125rem;
+  --text-footnote--line-height: 1.125rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+
+  /* Espacements sémantiques (en plus de l'échelle Tailwind de base 0.25rem) */
+  --spacing-gutter: 1rem;
+  --spacing-section: 1.5rem;
+  --spacing-tabbar: 5.5rem;
+  --spacing-control: 2.75rem;
+  --spacing-content: 32rem;
+
+  /* Rayons et ombres */
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --radius-sheet: 1.5rem;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02);
+  --shadow-floating: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--nt-canvas);
+  color: var(--nt-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1;
+}
+
+/* Les champs numériques n'affichent pas de flèches : la saisie se fait au clavier. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
