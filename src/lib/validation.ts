@@ -90,3 +90,33 @@ export const foodSchema = z.object({
   carbsG: requiredNumber("les glucides", 0, 100),
   fatG: requiredNumber("les lipides", 0, 100),
 });
+
+// --- Recettes -----------------------------------------------------------------
+
+function parseJson(value: unknown) {
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+export const recipeSchema = z.object({
+  id: z.preprocess((value) => (value === "" ? undefined : value), uuidSchema.optional()),
+  name: requiredText("le nom de la recette"),
+  servings: requiredNumber("le nombre de portions", 1, 50).pipe(z.int("Nombre entier attendu.")),
+  ingredients: z.preprocess(
+    parseJson,
+    z
+      .array(
+        z.object({
+          foodId: uuidSchema,
+          grams: z.number().positive("Quantité invalide.").max(20000, "20 kg maximum."),
+        }),
+        { error: "Ingrédients invalides." },
+      )
+      .min(1, "Ajoute au moins un ingrédient.")
+      .max(50, "50 ingrédients maximum."),
+  ),
+});

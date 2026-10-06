@@ -51,13 +51,55 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"recipe_ingredients": {
+                  Row: {
+                    "food_id": string,"grams": number,"id": string,"position": number,"recipe_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "food_id": string,"grams": number,"id"?: string,"position"?: number,"recipe_id": string,"user_id"?: string
+                  }
+                  Update: {
+                    "food_id"?: string,"grams"?: number,"id"?: string,"position"?: number,"recipe_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recipe_ingredients_food_id_fkey"
+      columns: ["food_id"]
+isOneToOne: false
+      referencedRelation: "foods"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_ingredients_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"recipes": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"servings": number,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"servings": number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"servings"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "save_recipe":
+{ Args: { "p_ingredients": Json,"p_name": string,"p_recipe_id"?: string,"p_servings": number }; Returns: string
+                           }
           }
           Enums: {
             [_ in never]: never

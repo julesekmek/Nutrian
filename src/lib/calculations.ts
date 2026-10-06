@@ -186,3 +186,49 @@ export function kcalFromMacros({ proteinG, carbsG, fatG }: Omit<Nutrients, "kcal
   const k = RULES.kcalPerGram;
   return proteinG * k.protein + carbsG * k.carbs + fatG * k.fat;
 }
+
+/** Apports d'une quantité d'aliment, à partir de ses valeurs pour 100 g. */
+export function nutrientsForGrams(per100g: Nutrients, grams: number): Nutrients {
+  const ratio = grams / 100;
+  return {
+    kcal: per100g.kcal * ratio,
+    proteinG: per100g.proteinG * ratio,
+    carbsG: per100g.carbsG * ratio,
+    fatG: per100g.fatG * ratio,
+  };
+}
+
+export function sumNutrients(items: Nutrients[]): Nutrients {
+  return items.reduce(
+    (total, item) => ({
+      kcal: total.kcal + item.kcal,
+      proteinG: total.proteinG + item.proteinG,
+      carbsG: total.carbsG + item.carbsG,
+      fatG: total.fatG + item.fatG,
+    }),
+    ZERO_NUTRIENTS,
+  );
+}
+
+export function scaleNutrients(nutrients: Nutrients, factor: number): Nutrients {
+  return {
+    kcal: nutrients.kcal * factor,
+    proteinG: nutrients.proteinG * factor,
+    carbsG: nutrients.carbsG * factor,
+    fatG: nutrients.fatG * factor,
+  };
+}
+
+// --- Recettes -----------------------------------------------------------------
+
+export type IngredientInput = { grams: number; per100g: Nutrients };
+
+export type RecipeNutrition = { total: Nutrients; perServing: Nutrients };
+
+/** Macros totales d'une recette et par portion (portions ≥ 1). */
+export function recipeNutrition(ingredients: IngredientInput[], servings: number): RecipeNutrition {
+  const total = sumNutrients(
+    ingredients.map((ingredient) => nutrientsForGrams(ingredient.per100g, ingredient.grams)),
+  );
+  return { total, perServing: scaleNutrients(total, 1 / Math.max(1, servings)) };
+}

@@ -213,3 +213,51 @@ export function SearchInput({
     </div>
   );
 }
+
+/** Compteur − / + (portions…), contrôlé. */
+export function Stepper({
+  label,
+  value,
+  onChange,
+  min = 1,
+  max = 99,
+  unit,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  unit?: (value: number) => string;
+}) {
+  const buttonClasses =
+    "flex size-control items-center justify-center rounded-control bg-surface-muted text-title font-semibold text-primary disabled:opacity-40";
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-callout font-medium text-ink">{label}</span>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className={buttonClasses}
+          onClick={() => onChange(Math.max(min, value - 1))}
+          disabled={value <= min}
+          aria-label={`Diminuer ${label.toLowerCase()}`}
+        >
+          −
+        </button>
+        <span className="min-w-16 text-center text-headline text-ink" aria-live="polite">
+          {unit ? unit(value) : value}
+        </span>
+        <button
+          type="button"
+          className={buttonClasses}
+          onClick={() => onChange(Math.min(max, value + 1))}
+          disabled={value >= max}
+          aria-label={`Augmenter ${label.toLowerCase()}`}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}

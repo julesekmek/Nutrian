@@ -6,6 +6,8 @@ import {
   computeDayPlan,
   dailyExpenditure,
   kcalFromMacros,
+  nutrientsForGrams,
+  recipeNutrition,
   macroTargets,
   type BodyProfile,
 } from "./calculations.ts";
@@ -117,5 +119,42 @@ describe("cibles macros", () => {
 describe("aliments", () => {
   it("déduit les kcal des macros (4 / 4 / 9)", () => {
     assert.equal(kcalFromMacros({ proteinG: 20, carbsG: 50, fatG: 10 }), 20 * 4 + 50 * 4 + 10 * 9);
+  });
+});
+
+describe("recettes", () => {
+  const chicken = { kcal: 112, proteinG: 24, carbsG: 0, fatG: 1.5 };
+  const rice = { kcal: 352, proteinG: 8, carbsG: 77, fatG: 0.8 };
+  const oil = { kcal: 900, proteinG: 0, carbsG: 0, fatG: 100 };
+
+  it("calcule les apports d'une quantité d'aliment", () => {
+    const result = nutrientsForGrams(chicken, 250);
+    close(result.kcal, 280);
+    close(result.proteinG, 60);
+    close(result.fatG, 3.75);
+  });
+
+  it("calcule les macros totales et par portion", () => {
+    const { total, perServing } = recipeNutrition(
+      [
+        { grams: 800, per100g: chicken },
+        { grams: 400, per100g: rice },
+        { grams: 20, per100g: oil },
+      ],
+      4,
+    );
+    // 896 + 1408 + 180 = 2484 kcal ; protéines 192 + 32 = 224 g
+    close(total.kcal, 2484);
+    close(total.proteinG, 224);
+    close(total.carbsG, 308);
+    close(total.fatG, 12 + 3.2 + 20);
+    close(perServing.kcal, 621);
+    close(perServing.proteinG, 56);
+  });
+
+  it("renvoie zéro pour une recette vide et protège contre 0 portion", () => {
+    const { total, perServing } = recipeNutrition([], 0);
+    assert.equal(total.kcal, 0);
+    assert.equal(perServing.kcal, 0);
   });
 });

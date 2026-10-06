@@ -46,3 +46,11 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Import complet de Ciqual** (≈ 3 000 aliments) : piste pour plus tard, voir le backlog.
 - **Énergie calculée si elle n'est pas saisie** : 4 kcal/g de protéines et de glucides, 9 kcal/g de lipides.
 - **Un aliment perso utilisé dans une recette ne peut pas être supprimé** (message explicite) pour ne pas fausser les recettes.
+
+## Recettes
+
+- **Macros non stockées** : elles sont recalculées à chaque affichage depuis les ingrédients et la base d'aliments. Corriger un aliment corrige toutes les recettes.
+- **Quantités saisies en poids cru** (indiqué dans l'écran) : c'est ainsi qu'on pèse en batch cooking et c'est ce que donnent les étiquettes. Des versions « cuit » existent pour les féculents si besoin.
+- **Enregistrement atomique** via la fonction SQL `save_recipe` (SECURITY INVOKER, donc soumise aux règles RLS) : la recette et ses ingrédients sont écrits ensemble ou pas du tout.
+- **1 à 50 portions, 1 à 50 ingrédients**, 4 portions proposées par défaut.
+- **Supprimer une recette** supprime aussi son stock et sa place dans la liste de courses ; les repas déjà enregistrés restent dans le journal (valeurs figées au moment du repas).

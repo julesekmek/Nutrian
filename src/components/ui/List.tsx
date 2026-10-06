@@ -27,7 +27,7 @@ export function ListItem({ title, subtitle, leading, trailing, href, chevron }: 
       <div className="min-w-0 flex-1">
         <div className="truncate text-body text-ink">{title}</div>
         {subtitle ? (
-          <div className="truncate text-footnote text-ink-muted">{subtitle}</div>
+          <div className="text-footnote text-ink-muted">{subtitle}</div>
         ) : null}
       </div>
       {trailing ? <div className="shrink-0 text-callout text-ink-muted">{trailing}</div> : null}

@@ -78,6 +78,7 @@ export function ConfirmButton({
   onConfirm,
   variant = "ghost",
   size = "sm",
+  fullWidth = false,
   ariaLabel,
 }: {
   children: ReactNode;
@@ -87,6 +88,7 @@ export function ConfirmButton({
   onConfirm: () => Promise<void> | void;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  fullWidth?: boolean;
   ariaLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -94,7 +96,13 @@ export function ConfirmButton({
 
   return (
     <>
-      <Button variant={variant} size={size} onClick={() => setOpen(true)} aria-label={ariaLabel}>
+      <Button
+        variant={variant}
+        size={size}
+        fullWidth={fullWidth}
+        onClick={() => setOpen(true)}
+        aria-label={ariaLabel}
+      >
         {children}
       </Button>
       <Modal open={open} onClose={() => setOpen(false)} title={title}>
