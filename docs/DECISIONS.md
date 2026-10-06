@@ -90,3 +90,13 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **La pesée la plus récente devient le poids du profil**, donc la base de toutes les cibles (métabolisme, protéines, lipides, pas). Supprimer une pesée revient à la précédente.
 - **Le poids saisi à l'onboarding est la première pesée** ; modifier le poids dans le Profil compte aussi comme une pesée du jour.
 - **Évolution affichée sans jugement** (« −0,4 kg depuis la dernière »), sans couleur rouge/verte, quel que soit l'objectif.
+
+## Tableau de bord et coach
+
+- **Cible du jour dynamique** : elle suit la dépense du jour (pas et séances saisis), donc elle monte quand tu bouges. Sans saisie, elle repose sur le niveau d'activité déclaré.
+- **Bilan énergétique = apports − dépense**, classé en surplus / équilibre / déficit avec une tolérance de ±150 kcal (`RULES.balanceToleranceKcal`).
+- **« En phase »** = le bilan d'une journée terminée va dans le sens de l'objectif (surplus en prise de masse, équilibre en maintien, déficit en perte de gras). Aujourd'hui est affiché « en cours », sans jugement.
+- **Recommandation repas** : plat du stock qui maximise (part des protéines restantes couverte + part des kcal restantes couverte) sans dépasser les kcal restantes. Déclenchée s'il reste ≥ 15 g de protéines ou ≥ 200 kcal. Sans plat adapté : conseil protéines générique.
+- **Recommandation batch** : intervalle entre batchs = 7 / batchs par semaine (3,5 jours par défaut). Si le stock ne couvre pas les jours jusqu'au prochain batch (portions par jour × jours restants), le coach indique combien de portions préparer. L'écran Courses affiche aussi les portions à prévoir pour le prochain batch.
+- **Rappel de pesée** au-delà de 7 jours sans pesée (si aucun message batch n'est prioritaire). Au plus 2 recommandations à la fois.
+- **Vue semaine = 7 derniers jours glissants** (pas lundi → dimanche) pour toujours voir une semaine complète. Les cibles des jours passés sont recalculées avec le poids actuel (approximation acceptable pour la V1).

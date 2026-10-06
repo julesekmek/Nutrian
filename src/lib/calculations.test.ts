@@ -3,6 +3,11 @@ import { describe, it } from "node:test";
 import {
   aggregateShoppingList,
   ageFromBirthYear,
+  batchPlan,
+  energyBalance,
+  isInPhaseWithGoal,
+  remainingNutrients,
+  suggestDishFromStock,
   basalMetabolicRate,
   computeDayPlan,
   dailyExpenditure,
@@ -219,5 +224,94 @@ describe("liste de courses", () => {
     ]);
     assert.equal(list.get("huile"), 4);
     assert.equal(list.has("thon"), false);
+  });
+});
+
+describe("bilan et objectif", () => {
+  it("classe le bilan en surplus, équilibre ou déficit (tolérance 150 kcal)", () => {
+    assert.deepEqual(energyBalance(3000, 2700), { kcal: 300, status: "surplus" });
+    assert.deepEqual(energyBalance(2600, 2700), { kcal: -100, status: "balanced" });
+    assert.deepEqual(energyBalance(2200, 2700), { kcal: -500, status: "deficit" });
+  });
+
+  it("vérifie que la journée va dans le sens de l'objectif", () => {
+    assert.equal(isInPhaseWithGoal("bulk", "surplus"), true);
+    assert.equal(isInPhaseWithGoal("cut", "surplus"), false);
+    assert.equal(isInPhaseWithGoal("maintain", "balanced"), true);
+  });
+
+  it("calcule ce qu'il reste à manger", () => {
+    const remaining = remainingNutrients(
+      { kcal: 2800, proteinG: 160, carbsG: 330, fatG: 80 },
+      { kcal: 1300, proteinG: 120, carbsG: 150, fatG: 40 },
+    );
+    assert.deepEqual(remaining, { kcal: 1500, proteinG: 40, carbsG: 180, fatG: 40 });
+  });
+});
+
+describe("recommandation : plat du stock", () => {
+  const dish = (id: string, kcal: number, proteinG: number, portionsLeft = 2) => ({
+    id,
+    name: id,
+    portionsLeft,
+    perServing: { kcal, proteinG, carbsG: 50, fatG: 10 },
+  });
+
+  it("choisit le plat qui comble le mieux protéines et kcal sans dépasser", () => {
+    const remaining = { kcal: 700, proteinG: 45, carbsG: 80, fatG: 20 };
+    const best = suggestDishFromStock(remaining, [
+      dish("pates-bolo", 680, 30),
+      dish("poulet-riz", 620, 50),
+      dish("chili", 750, 48),
+    ]);
+    assert.equal(best?.id, "poulet-riz");
+  });
+
+  it("ignore les plats sans portion ou trop caloriques", () => {
+    const remaining = { kcal: 400, proteinG: 30, carbsG: 40, fatG: 10 };
+    assert.equal(
+      suggestDishFromStock(remaining, [dish("vide", 350, 30, 0), dish("lourd", 650, 40)]),
+      null,
+    );
+  });
+
+  it("ne suggère rien quand la cible kcal est atteinte", () => {
+    const remaining = { kcal: -50, proteinG: 20, carbsG: 0, fatG: 0 };
+    assert.equal(suggestDishFromStock(remaining, [dish("poulet", 300, 40)]), null);
+  });
+});
+
+describe("recommandation : portions à préparer", () => {
+  it("ne demande rien si le stock tient jusqu'au prochain batch", () => {
+    const plan = batchPlan({ stockPortions: 8, portionsPerDay: 2, batchesPerWeek: 2, daysSinceLastBatch: 0 });
+    assert.equal(plan.missingNow, 0);
+    assert.equal(plan.intervalDays, 3.5);
+  });
+
+  it("calcule les portions manquantes avant le prochain batch", () => {
+    // Batch il y a 1 jour : 2,5 jours à couvrir × 2 portions = 5 ; stock 3 → il en manque 2.
+    const plan = batchPlan({ stockPortions: 3, portionsPerDay: 2, batchesPerWeek: 2, daysSinceLastBatch: 1 });
+    assert.equal(plan.missingNow, 2);
+    assert.equal(plan.coveredDays, 1.5);
+    // Au prochain batch : 7 portions pour 3,5 jours, rien ne restera.
+    assert.equal(plan.nextBatchPortions, 7);
+  });
+
+  it("le jour du batch, propose de couvrir tout l'intervalle suivant", () => {
+    const plan = batchPlan({ stockPortions: 1, portionsPerDay: 2, batchesPerWeek: 2, daysSinceLastBatch: 4 });
+    assert.equal(plan.batchDue, true);
+    assert.equal(plan.missingNow, 6);
+    assert.equal(plan.nextBatchPortions, 7);
+  });
+
+  it("déduit du prochain batch ce qui restera en stock", () => {
+    const plan = batchPlan({ stockPortions: 9, portionsPerDay: 2, batchesPerWeek: 2, daysSinceLastBatch: 1 });
+    assert.equal(plan.missingNow, 0);
+    assert.equal(plan.nextBatchPortions, 3);
+  });
+
+  it("sans aucune préparation, propose un premier batch complet", () => {
+    const plan = batchPlan({ stockPortions: 0, portionsPerDay: 2, batchesPerWeek: 2, daysSinceLastBatch: null });
+    assert.equal(plan.missingNow, 7);
   });
 });

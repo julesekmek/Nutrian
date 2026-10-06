@@ -78,7 +78,9 @@ export default async function AddPage({ searchParams }: PageProps<"/ajouter">) {
           />
         </div>
 
-        {tab === "repas" ? <MealTab day={day} /> : null}
+        {tab === "repas" ? (
+          <MealTab day={day} highlightRecipeId={typeof params.plat === "string" ? params.plat : null} />
+        ) : null}
         {tab === "seance" ? <WorkoutTab day={day} /> : null}
         {tab === "pas" ? <StepsTab day={day} /> : null}
         {tab === "pesee" ? <WeighInTab day={day} /> : null}
@@ -87,8 +89,10 @@ export default async function AddPage({ searchParams }: PageProps<"/ajouter">) {
   );
 }
 
-async function MealTab({ day }: { day: Day }) {
-  const stock = (await getStock()).filter((item) => item.portionsLeft >= 1);
+async function MealTab({ day, highlightRecipeId }: { day: Day; highlightRecipeId: string | null }) {
+  const stock = (await getStock())
+    .filter((item) => item.portionsLeft >= 1)
+    .sort((a, b) => Number(b.recipeId === highlightRecipeId) - Number(a.recipeId === highlightRecipeId));
   return (
     <>
       <section>
@@ -105,7 +109,7 @@ async function MealTab({ day }: { day: Day }) {
             }
           />
         ) : (
-          <StockPicker items={stock} day={day} />
+          <StockPicker items={stock} day={day} highlightRecipeId={highlightRecipeId} />
         )}
       </section>
       <section>

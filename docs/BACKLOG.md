@@ -21,3 +21,10 @@ Idées et améliorations repérées pendant la V1, à prioriser pour les prochai
 - Ajuster le stock sans supprimer de préparation (ex. « j'ai jeté une portion »).
 - Dupliquer une recette, photos de plats, étapes de préparation.
 - Date de péremption des portions et alerte « à manger en premier ».
+
+## Dashboard et coach
+
+- Nuancer « en phase » : un déficit très important (ou une journée incomplète) ne devrait pas être affiché comme idéal.
+- Historique des cibles (poids du jour de la pesée) pour une vue semaine exacte sur le passé.
+- Vue mois et tendance de poids lissée (moyenne mobile).
+- Notifications / rappels (pesée hebdo, batch du dimanche).

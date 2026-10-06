@@ -41,6 +41,8 @@ export const RULES = {
    * kcal = MET × poids (kg) × durée (h). Valeurs moyennes du Compendium of Physical Activities.
    */
   workoutMet: { strength: 5, running: 9.8, crossfit: 8, other: 6 } satisfies Record<WorkoutKind, number>,
+  /** Écart (kcal) entre apports et dépense en deçà duquel la journée est « à l'équilibre ». */
+  balanceToleranceKcal: 150,
 } as const;
 
 // --- Profil, métabolisme et dépense ------------------------------------------
@@ -290,4 +292,106 @@ export function aggregateShoppingList(plan: PlannedRecipe[]): Map<string, number
     gramsByFood.set(foodId, Math.ceil(grams - 1e-9));
   }
   return gramsByFood;
+}
+
+/**
+ * Portions à préparer pour tenir jusqu'au prochain batch (règle du coach).
+ * - Intervalle entre deux batchs = 7 / batchs par semaine (2 par semaine → 3,5 jours).
+ * - `missingNow` : portions qui manquent pour tenir jusqu'au prochain batch (0 si le stock suffit).
+ * - `nextBatchPortions` : portions à prévoir au prochain batch pour couvrir l'intervalle suivant.
+ */
+export function batchPlan({
+  stockPortions,
+  portionsPerDay,
+  batchesPerWeek,
+  daysSinceLastBatch,
+}: {
+  stockPortions: number;
+  portionsPerDay: number;
+  batchesPerWeek: number;
+  /** null si aucune préparation n'a encore été enregistrée. */
+  daysSinceLastBatch: number | null;
+}) {
+  const intervalDays = 7 / Math.max(1, batchesPerWeek);
+  const batchDue = daysSinceLastBatch === null || daysSinceLastBatch >= intervalDays;
+  const daysUntilNextBatch = batchDue ? intervalDays : intervalDays - daysSinceLastBatch;
+  const portionsUntilNextBatch = Math.ceil(daysUntilNextBatch * portionsPerDay - 1e-9);
+  const stock = Math.max(0, Math.floor(stockPortions));
+  const missingNow = Math.max(0, portionsUntilNextBatch - stock);
+  const leftoverAtNextBatch = batchDue ? 0 : Math.max(0, stock - portionsUntilNextBatch);
+  const nextBatchPortions = Math.max(
+    0,
+    Math.ceil(intervalDays * portionsPerDay - 1e-9) - leftoverAtNextBatch,
+  );
+  return {
+    intervalDays,
+    batchDue,
+    daysUntilNextBatch,
+    coveredDays: stockCoverageDays(stock, portionsPerDay),
+    missingNow,
+    nextBatchPortions,
+  };
+}
+
+// --- Bilan du jour et recommandations -------------------------------------------
+
+/** Ce qu'il reste à manger pour atteindre la cible (négatif si la cible est atteinte et au-delà). */
+export function remainingNutrients(targets: MacroTargets, intake: Nutrients): Nutrients {
+  return {
+    kcal: targets.kcal - intake.kcal,
+    proteinG: targets.proteinG - intake.proteinG,
+    carbsG: targets.carbsG - intake.carbsG,
+    fatG: targets.fatG - intake.fatG,
+  };
+}
+
+export type BalanceStatus = "surplus" | "balanced" | "deficit";
+
+/** Bilan énergétique = apports − dépense. */
+export function energyBalance(intakeKcal: number, expenditureKcal: number) {
+  const kcal = intakeKcal - expenditureKcal;
+  const status: BalanceStatus =
+    kcal > RULES.balanceToleranceKcal
+      ? "surplus"
+      : kcal < -RULES.balanceToleranceKcal
+        ? "deficit"
+        : "balanced";
+  return { kcal, status };
+}
+
+const EXPECTED_BALANCE: Record<Goal, BalanceStatus> = {
+  bulk: "surplus",
+  maintain: "balanced",
+  cut: "deficit",
+};
+
+/** La journée va-t-elle dans le sens de l'objectif (surplus en masse, déficit en sèche, équilibre en maintien) ? */
+export function isInPhaseWithGoal(goal: Goal, status: BalanceStatus): boolean {
+  return EXPECTED_BALANCE[goal] === status;
+}
+
+export type StockDish = { id: string; name: string; perServing: Nutrients; portionsLeft: number };
+
+/**
+ * Plat du stock qui comble le mieux le manque du jour sans dépasser les kcal restantes.
+ * Score = part des protéines restantes couverte + part des kcal restantes couverte.
+ */
+export function suggestDishFromStock(remaining: Nutrients, dishes: StockDish[]): StockDish | null {
+  if (remaining.kcal <= 0) return null;
+  const coverage = (value: number, needed: number) =>
+    needed > 0 ? Math.min(value, needed) / needed : 0;
+
+  let best: { dish: StockDish; score: number } | null = null;
+  for (const dish of dishes) {
+    if (dish.portionsLeft < 1 || dish.perServing.kcal > remaining.kcal) continue;
+    const score =
+      coverage(dish.perServing.proteinG, remaining.proteinG) +
+      coverage(dish.perServing.kcal, remaining.kcal);
+    const isBetter =
+      !best ||
+      score > best.score + 1e-9 ||
+      (Math.abs(score - best.score) <= 1e-9 && dish.perServing.proteinG > best.dish.perServing.proteinG);
+    if (isBetter) best = { dish, score };
+  }
+  return best?.dish ?? null;
 }
