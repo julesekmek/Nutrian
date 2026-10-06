@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StepsForm } from "@/components/StepsForm";
+import { WeighInForm } from "@/components/WeighInForm";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, SectionTitle } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
@@ -18,12 +19,13 @@ import { WorkoutForm } from "./WorkoutForm";
 export const metadata: Metadata = { title: "Ajouter" };
 
 type Day = "today" | "yesterday";
-type Tab = "repas" | "seance" | "pas";
+type Tab = "repas" | "seance" | "pas" | "pesee";
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "repas", label: "Repas" },
   { value: "seance", label: "Séance" },
   { value: "pas", label: "Pas" },
+  { value: "pesee", label: "Pesée" },
 ];
 
 function buildHref(tab: Tab, day: Day) {
@@ -79,6 +81,7 @@ export default async function AddPage({ searchParams }: PageProps<"/ajouter">) {
         {tab === "repas" ? <MealTab day={day} /> : null}
         {tab === "seance" ? <WorkoutTab day={day} /> : null}
         {tab === "pas" ? <StepsTab day={day} /> : null}
+        {tab === "pesee" ? <WeighInTab day={day} /> : null}
       </div>
     </>
   );
@@ -130,6 +133,15 @@ async function StepsTab({ day }: { day: Day }) {
   return (
     <Card>
       <StepsForm day={day} currentSteps={activity.stepsByDay.get(date) ?? null} redirectTo="/" />
+    </Card>
+  );
+}
+
+async function WeighInTab({ day }: { day: Day }) {
+  const profile = await getProfile();
+  return (
+    <Card>
+      <WeighInForm day={day} lastWeightKg={profile?.weightKg ?? null} redirectTo="/" />
     </Card>
   );
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StepsForm } from "@/components/StepsForm";
+import { WeighInForm } from "@/components/WeighInForm";
+import { WeightChart } from "@/components/WeightChart";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardHeader, SectionTitle } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
@@ -9,9 +11,11 @@ import { EmptyState } from "@/components/ui/States";
 import { RULES, computeDayPlan } from "@/lib/calculations";
 import { dayActivity, getActivity } from "@/lib/data/activity";
 import { getProfile } from "@/lib/data/profile";
-import { addDays, currentYear, todayIso } from "@/lib/dates";
-import { formatInteger, formatKcal } from "@/lib/format";
+import { getWeighIns } from "@/lib/data/weights";
+import { addDays, currentYear, daysBetween, todayIso } from "@/lib/dates";
+import { formatDecimal, formatInteger, formatKcal } from "@/lib/format";
 import { ACTIVITY_LEVELS, labelOf } from "@/lib/labels";
+import { WeighInList } from "./WeighInList";
 import { WorkoutList } from "./WorkoutList";
 
 export const metadata: Metadata = { title: "Activité" };
@@ -27,14 +31,17 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default async function ActivityPage() {
   const today = todayIso();
-  const [profile, activity] = await Promise.all([
+  const [profile, activity, weighIns] = await Promise.all([
     getProfile(),
     getActivity(addDays(today, -6), today),
+    getWeighIns(),
   ]);
   if (!profile) redirect("/onboarding");
 
   const todayActivity = dayActivity(activity, today);
   const { expenditure } = computeDayPlan(profile, currentYear(), todayActivity);
+  const lastWeighIn = weighIns[0] ?? null;
+  const daysSinceWeighIn = lastWeighIn ? daysBetween(lastWeighIn.day, today) : null;
 
   return (
     <>
@@ -91,6 +98,33 @@ export default async function ActivityPage() {
           ) : (
             <WorkoutList workouts={activity.workouts} today={today} />
           )}
+        </section>
+
+        <section>
+          <SectionTitle>Poids</SectionTitle>
+          <div className="flex flex-col gap-3">
+            <Card className="flex flex-col gap-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <div>
+                  <p className="text-title text-ink">{formatDecimal(profile.weightKg)} kg</p>
+                  <p className="text-footnote text-ink-muted">Poids de référence de tes cibles</p>
+                </div>
+                {daysSinceWeighIn !== null ? (
+                  <p className="text-right text-footnote text-ink-muted">
+                    {daysSinceWeighIn === 0
+                      ? "Pesée du jour, bien joué"
+                      : `Dernière pesée il y a ${daysSinceWeighIn} jour${daysSinceWeighIn > 1 ? "s" : ""}`}
+                  </p>
+                ) : null}
+              </div>
+              <WeightChart weighIns={weighIns} />
+              <WeighInForm day="today" lastWeightKg={lastWeighIn?.weightKg ?? profile.weightKg} />
+              <p className="text-footnote text-ink-muted">
+                Une pesée par semaine suffit : même jour, au réveil. Ta cible se réajuste aussitôt.
+              </p>
+            </Card>
+            {weighIns.length > 0 ? <WeighInList weighIns={weighIns} today={today} /> : null}
+          </div>
         </section>
       </div>
     </>

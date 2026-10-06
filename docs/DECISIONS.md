@@ -83,3 +83,10 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **kcal d'une séance facultatives** : si la montre ne donne rien, estimation `MET × poids × durée` (MET moyens : musculation 5, course 9,8, CrossFit 8, autre 6), affichée avant validation. Règle dans `RULES.workoutMet`.
 - **Pas : une valeur par jour**, modifiable (la dernière saisie remplace la précédente).
 - **« Activité saisie »** = des pas renseignés (même 0) ou au moins une séance. Sinon la dépense est estimée avec le niveau d'activité déclaré.
+
+## Pesées
+
+- **Une pesée par jour maximum** (une nouvelle saisie le même jour remplace la précédente).
+- **La pesée la plus récente devient le poids du profil**, donc la base de toutes les cibles (métabolisme, protéines, lipides, pas). Supprimer une pesée revient à la précédente.
+- **Le poids saisi à l'onboarding est la première pesée** ; modifier le poids dans le Profil compte aussi comme une pesée du jour.
+- **Évolution affichée sans jugement** (« −0,4 kg depuis la dernière »), sans couleur rouge/verte, quel que soit l'objectif.

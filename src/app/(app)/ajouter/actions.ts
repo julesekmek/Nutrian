@@ -12,6 +12,7 @@ import { getAuthenticatedClient } from "@/lib/auth";
 import { estimateWorkoutKcal } from "@/lib/calculations";
 import { getProfile } from "@/lib/data/profile";
 import { getRecipe } from "@/lib/data/recipes";
+import { syncProfileWeight } from "@/lib/data/weights";
 import { dayFromChoice } from "@/lib/dates";
 import {
   formDataToObject,
@@ -19,8 +20,10 @@ import {
   stepsSchema,
   stockMealSchema,
   uuidSchema,
+  weighInSchema,
   workoutSchema,
 } from "@/lib/validation";
+import { formatDecimal } from "@/lib/format";
 
 const round1 = (value: number) => Math.round(value * 10) / 10;
 
@@ -184,4 +187,55 @@ export async function deleteWorkout(workoutId: string): Promise<ActionResult> {
 
   refreshAll();
   return success("Séance retirée.");
+}
+
+// --- Pesées ---------------------------------------------------------------------
+
+export async function saveWeighIn(formData: FormData): Promise<ActionResult> {
+  const parsed = weighInSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) return validationFailure(parsed.error);
+
+  const weightKg = round1(parsed.data.weightKg);
+  const day = dayFromChoice(parsed.data.day);
+  const { supabase, user } = await getAuthenticatedClient();
+
+  const { data: previous } = await supabase
+    .from("weigh_ins")
+    .select("weight_kg")
+    .lt("day", day)
+    .order("day", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("weigh_ins")
+    .upsert({ user_id: user.id, day, weight_kg: weightKg }, { onConflict: "user_id,day" });
+  if (error) return failure(GENERIC_ERROR);
+  if (await syncProfileWeight(supabase, user.id)) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  if (!previous) return success(`Pesée notée : ${formatDecimal(weightKg)} kg. Tes cibles sont à jour.`);
+  const delta = round1(weightKg - Number(previous.weight_kg));
+  const trend =
+    delta === 0
+      ? "stable depuis la dernière"
+      : `${delta > 0 ? "+" : "−"}${formatDecimal(Math.abs(delta))} kg depuis la dernière`;
+  return success(`Pesée notée : ${formatDecimal(weightKg)} kg (${trend}). Tes cibles sont à jour.`);
+}
+
+export async function deleteWeighIn(weighInId: string): Promise<ActionResult> {
+  const id = uuidSchema.safeParse(weighInId);
+  if (!id.success) return failure("Pesée introuvable.");
+
+  const { supabase, user } = await getAuthenticatedClient();
+  const { error, count } = await supabase
+    .from("weigh_ins")
+    .delete({ count: "exact" })
+    .eq("id", id.data)
+    .eq("user_id", user.id);
+  if (error || count === 0) return failure(GENERIC_ERROR);
+  if (await syncProfileWeight(supabase, user.id)) return failure(GENERIC_ERROR);
+
+  refreshAll();
+  return success("Pesée retirée.");
 }

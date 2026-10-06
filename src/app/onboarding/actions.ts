@@ -10,7 +10,7 @@ import {
   type ActionResult,
 } from "@/lib/action-result";
 import { getAuthenticatedClient } from "@/lib/auth";
-import { currentYear } from "@/lib/dates";
+import { currentYear, todayIso } from "@/lib/dates";
 import {
   batchSettingsSchema,
   formDataToObject,
@@ -30,6 +30,19 @@ function toProfileRow(input: ProfileInput) {
   };
 }
 
+async function recordWeighIn(
+  supabase: Awaited<ReturnType<typeof getAuthenticatedClient>>["supabase"],
+  userId: string,
+  weightKg: number,
+) {
+  await supabase
+    .from("weigh_ins")
+    .upsert(
+      { user_id: userId, day: todayIso(), weight_kg: Math.round(weightKg * 10) / 10 },
+      { onConflict: "user_id,day" },
+    );
+}
+
 /** Fin de l'onboarding : crée le profil puis ouvre le tableau de bord. */
 export async function completeOnboarding(formData: FormData): Promise<ActionResult> {
   const parsed = profileSchema.safeParse(formDataToObject(formData));
@@ -40,6 +53,8 @@ export async function completeOnboarding(formData: FormData): Promise<ActionResu
     .from("profiles")
     .upsert({ user_id: user.id, ...toProfileRow(parsed.data) });
   if (error) return failure(GENERIC_ERROR);
+  // Le poids de l'onboarding devient la première pesée de l'historique.
+  await recordWeighIn(supabase, user.id, parsed.data.weightKg);
 
   revalidatePath("/", "layout");
   redirect("/");
@@ -51,11 +66,16 @@ export async function updateProfile(formData: FormData): Promise<ActionResult> {
   if (!parsed.success) return validationFailure(parsed.error);
 
   const { supabase, user } = await getAuthenticatedClient();
+  const { data: current } = await supabase.from("profiles").select("weight_kg").maybeSingle();
   const { error } = await supabase
     .from("profiles")
     .update(toProfileRow(parsed.data))
     .eq("user_id", user.id);
   if (error) return failure(GENERIC_ERROR);
+  // Un poids modifié dans le profil compte comme une pesée du jour.
+  if (current && Number(current.weight_kg) !== parsed.data.weightKg) {
+    await recordWeighIn(supabase, user.id, parsed.data.weightKg);
+  }
 
   revalidatePath("/", "layout");
   return success("Profil mis à jour, tes cibles sont recalculées.");

@@ -178,3 +178,10 @@ export const workoutSchema = z.object({
   kcal: optionalNumber(0, 5000),
   day: dayChoiceSchema,
 });
+
+// --- Pesées ---------------------------------------------------------------------
+
+export const weighInSchema = z.object({
+  weightKg: requiredNumber("ton poids", 30, 300),
+  day: dayChoiceSchema,
+});

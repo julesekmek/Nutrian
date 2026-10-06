@@ -209,6 +209,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"weigh_ins": {
+                  Row: {
+                    "created_at": string,"day": string,"id": string,"user_id": string,"weight_kg": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"day": string,"id"?: string,"user_id"?: string,"weight_kg": number
+                  }
+                  Update: {
+                    "created_at"?: string,"day"?: string,"id"?: string,"user_id"?: string,"weight_kg"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"workouts": {
                   Row: {
                     "created_at": string,"day": string,"duration_min": number,"id": string,"kcal": number,"kind": string,"user_id": string
