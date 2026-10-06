@@ -30,3 +30,11 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **E-mail + mot de passe, 8 caractères minimum** (validé côté serveur avec Zod, messages d'erreur Supabase traduits).
 - **Confirmation d'e-mail gérée dans les deux cas** : si elle est désactivée dans Supabase, l'inscription ouvre directement l'onboarding ; si elle est activée, un message invite à cliquer le lien, qui revient sur `/auth/confirm` puis l'onboarding. Recommandation pour un usage solo : la désactiver.
 - **Base Supabase locale (Docker) pour le développement** : `npx supabase start` + `npm run dev:local`. Un compte de test local est créé par `supabase/seed.sql` (jamais exécuté sur le projet distant).
+
+## Onboarding et profil
+
+- **Âge stocké sous forme d'année de naissance** (`birth_year = année en cours − âge saisi`) pour que l'âge reste juste d'une année sur l'autre.
+- **Cinq niveaux d'activité déclarée** avec les facteurs classiques : sédentaire 1,2 · légère 1,375 · modérée 1,55 · active 1,725 · très active 1,9. Utilisés uniquement les jours sans pas ni séance saisis.
+- **Le poids actuel vit dans le profil** ; les pesées (bloc 9) le mettent à jour.
+- **Cible calculée côté navigateur pendant l'onboarding** (même module de calcul que le serveur) pour l'afficher instantanément, puis le serveur revalide toutes les valeurs à l'enregistrement.
+- **Valeurs arrondies** : kcal et grammes à l'unité.

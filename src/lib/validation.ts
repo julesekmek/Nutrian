@@ -59,3 +59,22 @@ export function formDataToObject(formData: FormData): Record<string, FormDataEnt
   }
   return result;
 }
+
+// --- Profil -------------------------------------------------------------------
+
+export const goalSchema = z.enum(["bulk", "maintain", "cut"], { error: "Choisis ton objectif." });
+export const sexSchema = z.enum(["male", "female"], { error: "Choisis une option." });
+export const activityLevelSchema = z.enum(
+  ["sedentary", "light", "moderate", "active", "very_active"],
+  { error: "Choisis ton niveau d'activité." },
+);
+
+export const profileSchema = z.object({
+  goal: goalSchema,
+  sex: sexSchema,
+  age: requiredNumber("ton âge", 14, 100),
+  heightCm: requiredNumber("ta taille", 100, 250),
+  weightKg: requiredNumber("ton poids", 30, 300),
+  activityLevel: activityLevelSchema,
+});
+export type ProfileInput = z.infer<typeof profileSchema>;

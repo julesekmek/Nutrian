@@ -1,23 +1,21 @@
 import { PageHeader } from "@/components/layout/PageHeader";
-import { SubmitButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/States";
-import { requireUser } from "@/lib/auth";
-import { signOut } from "../(auth)/actions";
+import { TargetSummary } from "@/components/TargetSummary";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { computeDayPlan } from "@/lib/calculations";
+import { getProfile } from "@/lib/data/profile";
+import { currentYear } from "@/lib/dates";
 
 export default async function TodayPage() {
-  const user = await requireUser();
+  const profile = await getProfile();
+  if (!profile) return null;
+  const plan = computeDayPlan(profile, currentYear());
   return (
     <>
       <PageHeader title="Aujourd'hui" />
-      <EmptyState
-        title="Bienvenue sur Nutrian"
-        description={`Connecté en tant que ${user.email}.`}
-        action={
-          <form action={signOut}>
-            <SubmitButton variant="secondary">Se déconnecter</SubmitButton>
-          </form>
-        }
-      />
+      <Card>
+        <CardHeader title="Ta cible du jour" subtitle="Estimation" />
+        <TargetSummary targets={plan.targets} />
+      </Card>
     </>
   );
 }
