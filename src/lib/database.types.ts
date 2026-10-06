@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "profiles": {
+            "foods": {
+                  Row: {
+                    "carbs_per_100g": number,"category": string,"created_at": string,"fat_per_100g": number,"id": string,"kcal_per_100g": number,"name": string,"protein_per_100g": number,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "carbs_per_100g": number,"category"?: string,"created_at"?: string,"fat_per_100g": number,"id"?: string,"kcal_per_100g": number,"name": string,"protein_per_100g": number,"user_id"?: string | null
+                  }
+                  Update: {
+                    "carbs_per_100g"?: number,"category"?: string,"created_at"?: string,"fat_per_100g"?: number,"id"?: string,"kcal_per_100g"?: number,"name"?: string,"protein_per_100g"?: number,"user_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"profiles": {
                   Row: {
                     "activity_level": string,"birth_year": number,"created_at": string,"goal": string,"height_cm": number,"sex": string,"updated_at": string,"user_id": string,"weight_kg": number
                   }

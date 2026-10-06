@@ -174,3 +174,15 @@ export function computeDayPlan(
   });
   return { bmrKcal, expenditure, targets };
 }
+
+// --- Aliments -----------------------------------------------------------------
+
+export type Nutrients = { kcal: number; proteinG: number; carbsG: number; fatG: number };
+
+export const ZERO_NUTRIENTS: Nutrients = { kcal: 0, proteinG: 0, carbsG: 0, fatG: 0 };
+
+/** Énergie déduite des macros (4 / 4 / 9 kcal par gramme). */
+export function kcalFromMacros({ proteinG, carbsG, fatG }: Omit<Nutrients, "kcal">): number {
+  const k = RULES.kcalPerGram;
+  return proteinG * k.protein + carbsG * k.carbs + fatG * k.fat;
+}

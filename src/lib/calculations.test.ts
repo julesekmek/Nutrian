@@ -5,6 +5,7 @@ import {
   basalMetabolicRate,
   computeDayPlan,
   dailyExpenditure,
+  kcalFromMacros,
   macroTargets,
   type BodyProfile,
 } from "./calculations.ts";
@@ -110,5 +111,11 @@ describe("cibles macros", () => {
     assert.equal(plan.bmrKcal, 1780);
     assert.equal(plan.expenditure.method, "estimated");
     assert.equal(plan.targets.kcal, Math.round(1780 * 1.55 + 300));
+  });
+});
+
+describe("aliments", () => {
+  it("déduit les kcal des macros (4 / 4 / 9)", () => {
+    assert.equal(kcalFromMacros({ proteinG: 20, carbsG: 50, fatG: 10 }), 20 * 4 + 50 * 4 + 10 * 9);
   });
 });

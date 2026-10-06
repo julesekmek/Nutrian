@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FOOD_CATEGORY_VALUES } from "@/lib/foods";
 
 /** Convertit une saisie texte en nombre (accepte la virgule décimale française). */
 function toNumber(value: unknown) {
@@ -78,3 +79,14 @@ export const profileSchema = z.object({
   activityLevel: activityLevelSchema,
 });
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+// --- Aliments -----------------------------------------------------------------
+
+export const foodSchema = z.object({
+  name: requiredText("le nom de l'aliment"),
+  category: z.enum(FOOD_CATEGORY_VALUES, { error: "Choisis une catégorie." }),
+  kcal: optionalNumber(0, 950),
+  proteinG: requiredNumber("les protéines", 0, 100),
+  carbsG: requiredNumber("les glucides", 0, 100),
+  fatG: requiredNumber("les lipides", 0, 100),
+});

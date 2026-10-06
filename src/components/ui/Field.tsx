@@ -177,3 +177,39 @@ export function ChoiceGroup({
     </fieldset>
   );
 }
+
+/** Champ de recherche contrôlé (filtrage instantané côté navigateur). */
+export function SearchInput({
+  value,
+  onChange,
+  placeholder = "Rechercher",
+  label = "Rechercher",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  label?: string;
+}) {
+  return (
+    <div className="relative">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="pointer-events-none absolute inset-y-0 left-3 my-auto size-5 stroke-ink-subtle"
+        fill="none"
+        strokeWidth={2}
+        strokeLinecap="round"
+      >
+        <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4" />
+      </svg>
+      <input
+        type="search"
+        aria-label={label}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className={`${CONTROL_CLASSES} pl-10`}
+      />
+    </div>
+  );
+}

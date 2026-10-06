@@ -38,3 +38,11 @@ Outils sans dépendance ajoutée : tests avec le lanceur intégré de Node (`nod
 - **Le poids actuel vit dans le profil** ; les pesées (bloc 9) le mettent à jour.
 - **Cible calculée côté navigateur pendant l'onboarding** (même module de calcul que le serveur) pour l'afficher instantanément, puis le serveur revalide toutes les valeurs à l'enregistrement.
 - **Valeurs arrondies** : kcal et grammes à l'unité.
+
+## Base d'aliments
+
+- **Base commune partagée + aliments perso** : les 185 aliments fournis ont `user_id = NULL` et sont lisibles par tout compte connecté, sans pouvoir être modifiés. Les aliments ajoutés appartiennent à `user_id = auth.uid()`. Plus simple que de recopier la base pour chaque compte.
+- **185 aliments** (un peu plus que les ~150 demandés) avec des valeurs arrondies proches de Ciqual, en version crue et cuite pour les féculents et le poulet. Ce sont des repères à vérifier, pas un import officiel.
+- **Import complet de Ciqual** (≈ 3 000 aliments) : piste pour plus tard, voir le backlog.
+- **Énergie calculée si elle n'est pas saisie** : 4 kcal/g de protéines et de glucides, 9 kcal/g de lipides.
+- **Un aliment perso utilisé dans une recette ne peut pas être supprimé** (message explicite) pour ne pas fausser les recettes.
